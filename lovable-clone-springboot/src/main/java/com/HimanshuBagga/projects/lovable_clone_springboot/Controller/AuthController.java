@@ -8,10 +8,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.auth.SignupReques
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.auth.UserProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,12 +17,12 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signUp(SignupRequest request){
+    public ResponseEntity<AuthResponse> signUp(@RequestBody SignupRequest request){
         AuthResponse authResponse = authService.signup(request);
         return ResponseEntity.ok(authResponse);
     }
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(LoginRequest request){
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request){
         AuthResponse authResponse = authService.login(request);
         return ResponseEntity.ok(authResponse);
     }

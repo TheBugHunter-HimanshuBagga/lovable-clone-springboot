@@ -1,9 +1,9 @@
 package com.HimanshuBagga.projects.lovable_clone_springboot.dto.subscription;
 
 public record UsageResponseToday(
-        int tokensUsed,// used by You today
-        int tokensList, // coming from the plan
-        int previewRunning, // used by You today
-        int previewLimit // coming from the plan
+        Integer tokensUsed,// used by You today
+        Integer tokensList, // coming from the plan
+        Integer previewRunning, // used by You today
+        Integer previewLimit // coming from the plan
 ) {
 }
