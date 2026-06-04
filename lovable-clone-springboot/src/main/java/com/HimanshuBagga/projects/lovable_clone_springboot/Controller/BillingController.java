@@ -2,10 +2,7 @@ package com.HimanshuBagga.projects.lovable_clone_springboot.Controller;
 
 import com.HimanshuBagga.projects.lovable_clone_springboot.Service.PlanService;
 import com.HimanshuBagga.projects.lovable_clone_springboot.Service.SubscriptionService;
-import com.HimanshuBagga.projects.lovable_clone_springboot.dto.subscription.CheckoutResponse;
-import com.HimanshuBagga.projects.lovable_clone_springboot.dto.subscription.CheckoutRequest;
-import com.HimanshuBagga.projects.lovable_clone_springboot.dto.subscription.PlanResponse;
-import com.HimanshuBagga.projects.lovable_clone_springboot.dto.subscription.SubscriptionResponse;
+import com.HimanshuBagga.projects.lovable_clone_springboot.dto.subscription.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,4 +32,11 @@ public class BillingController {
         CheckoutResponse response = subscriptionService.createCheckoutSessionUrl(request);
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/api/stripe/portal")
+    public ResponseEntity<PortalResponse> openCustomerPortal(){
+        Long userId = 1L;
+        PortalResponse portalResponse = subscriptionService.openCustomerPortal(userId);
+        return ResponseEntity.ok(portalResponse);
+    }
+
 }
