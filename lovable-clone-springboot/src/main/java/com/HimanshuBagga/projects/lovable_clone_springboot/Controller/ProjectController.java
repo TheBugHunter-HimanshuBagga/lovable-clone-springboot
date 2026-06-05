@@ -24,7 +24,7 @@ public class ProjectController {
     }
 
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long id){
         Long userId = 1L;
         ProjectResponse projectResponse = projectService.getUserProjectById(id , userId);
@@ -38,7 +38,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectResponse);
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id,
                                                          @RequestBody ProjectRequest request){
         Long userId = 1L;
