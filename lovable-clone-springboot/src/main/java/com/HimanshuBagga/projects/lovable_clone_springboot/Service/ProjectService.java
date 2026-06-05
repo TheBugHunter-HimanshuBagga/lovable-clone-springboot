@@ -4,8 +4,10 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRe
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectSummaryResponse;
 
+import java.util.List;
+
 public interface ProjectService {
-    ProjectSummaryResponse getUserProjects(Long userId);
+    List<ProjectSummaryResponse> getUserProjects(Long userId);
     ProjectResponse getUserProjectById(Long Id , Long userId);
     ProjectResponse createProject(ProjectRequest projectRequest , Long userId);
     ProjectResponse updateProject(Long id , ProjectRequest request , Long userId);

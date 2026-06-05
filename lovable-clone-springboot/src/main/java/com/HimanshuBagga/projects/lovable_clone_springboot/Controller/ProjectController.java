@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/projects")
@@ -15,9 +17,9 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public ResponseEntity<ProjectSummaryResponse> getMyProjects(){
+    public ResponseEntity<List<ProjectSummaryResponse>> getMyProjects(){
         Long userId = 1L;
-        ProjectSummaryResponse projectSummaryResponse = projectService.getUserProjects(userId);
+        List<ProjectSummaryResponse> projectSummaryResponse = projectService.getUserProjects(userId);
         return ResponseEntity.ok(projectSummaryResponse);
     }
 
