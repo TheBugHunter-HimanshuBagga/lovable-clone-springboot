@@ -11,12 +11,14 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRe
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMember;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMemberId;
+import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMemberMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +57,47 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
-        return null;
+
+        // to invite a memeber we need a particular project to add him in that Project hence
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
+
+        // only project owner can invite the people right
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException(
+                    "You are not allowed to add/invite the people in the project"
+            );
+        }
+
+        // for inviting a person i need his/her email and role hence
+        User invitee = userRepository.findByEmail(request.email()).orElseThrow();
+
+        // may be owner is trying to invite himself?
+        if(invitee.getId().equals(userId)){
+            throw new RuntimeException(
+                    "Can't invite yourself"
+            );
+        }
+
+        // invitee should not be present earlier in the projectMembers
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId , invitee.getId());
+
+        if(projectMemberRepository.existsById(projectMemberId)){
+            throw new RuntimeException(
+                    "Can't invite once again"
+            );
+        }
+
+        ProjectMember projectMember = ProjectMember.builder()
+                .id(projectMemberId)
+                .project(project)
+                .user(invitee)
+                .projectRole(request.role())
+                .invitedAt(Instant.now())
+                .build();
+
+        projectMemberRepository.save(projectMember);
+
+        return projectMemberMapper.toProjectMemberResponseFromMember(projectMember);
     }
 
     @Override
