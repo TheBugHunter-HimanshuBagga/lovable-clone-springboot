@@ -12,6 +12,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMember;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMemberId;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
+import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMapper;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMemberMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -102,11 +103,45 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public MemberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest updateMemberRoleRequest, Long userId) {
-        return null;
+        // first we need to check that is that user Authenticated right also with this we need to check wheather the person updating is an owner or not right
+
+        // check weather the particular project exists or not where i need to update the userRole
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
+
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException("You are not allowed to Update/Change the role of a member");
+        }
+
+        // if the projects i got then and the updateor is an owner then:
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId); // whom to update?
+        ProjectMember projectMember = projectMemberRepository.findById(projectMemberId).orElseThrow(); // exists or not
+
+        projectMember.setProjectRole(updateMemberRoleRequest.role());
+
+        projectMemberRepository.save(projectMember);
+
+        return projectMemberMapper.toProjectMemberResponseFromMember(projectMember);
     }
 
     @Override
-    public void deleteProjectMember(Long projectId, Long memberId, Long userId) {
+    public void removeProjectMember(Long projectId, Long memberId, Long userId) {
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
 
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException(
+                    "Ypu can't remove the project Member/You don't have permission to remove the project Member"
+            );
+        }
+
+        // find the projectMember
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);
+        if(!projectMemberRepository.existsById(projectMemberId)){
+            throw new RuntimeException(
+                    "Doesn't Exists"
+            );
+        }
+
+        // if he/she is owner then
+        projectMemberRepository.deleteById(projectMemberId);
     }
 }
