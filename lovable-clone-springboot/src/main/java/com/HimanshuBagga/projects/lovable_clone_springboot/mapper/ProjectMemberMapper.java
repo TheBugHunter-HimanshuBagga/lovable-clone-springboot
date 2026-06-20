@@ -21,4 +21,6 @@ public interface ProjectMemberMapper {
 /*
 Source: User
 Target: MemberResponse
+
+Used to make the null fields
  */

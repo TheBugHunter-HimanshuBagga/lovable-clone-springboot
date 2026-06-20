@@ -4,6 +4,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.Service.ProjectServic
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRequest;
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectSummaryResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectRequest request){
+    public ResponseEntity<ProjectResponse> createProject(@RequestBody @Valid ProjectRequest request){
         Long userId = 1L;
         ProjectResponse projectResponse = projectService.createProject(request , userId);
         return ResponseEntity.ok(projectResponse);
@@ -40,7 +41,7 @@ public class ProjectController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id,
-                                                         @RequestBody ProjectRequest request){
+                                                         @RequestBody @Valid ProjectRequest request){
         Long userId = 1L;
         ProjectResponse projectResponse = projectService.updateProject(id , request ,userId);
         return ResponseEntity.ok(projectResponse);
