@@ -40,7 +40,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 
         // if that project doesn't exists
-        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
         // if my project Exists then return its owner + members(ProjectMembers)
         List<MemberResponse> memberResponseList = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
 
         // to invite a memeber we need a particular project to add him in that Project hence
-        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
         // only project owner can invite the people right
         if(!project.getOwner().getId().equals(userId)){
@@ -106,7 +106,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         // first we need to check that is that user Authenticated right also with this we need to check wheather the person updating is an owner or not right
 
         // check weather the particular project exists or not where i need to update the userRole
-        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
         if(!project.getOwner().getId().equals(userId)){
             throw new RuntimeException("You are not allowed to Update/Change the role of a member");
@@ -125,7 +125,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public void removeProjectMember(Long projectId, Long memberId, Long userId) {
-        Project project = projectRepository.findAccessibleProjectById(projectId,userId);
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
         if(!project.getOwner().getId().equals(userId)){
             throw new RuntimeException(

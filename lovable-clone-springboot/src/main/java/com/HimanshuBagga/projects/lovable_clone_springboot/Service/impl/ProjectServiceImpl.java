@@ -8,6 +8,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRe
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectSummaryResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
+import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -53,14 +54,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectResponse getUserProjectById(Long id, Long userId) {
-        Project project = projectRepository.findAccessibleProjectById(id , userId);
+        Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow(
+                () -> new ResourceNotFoundException("Project",id.toString()) // if project is not found then it will be caught by Global Exception Handler ResourceNotFound
+        );
         return projectMapper.toProjectResponse(project);
     }
 
 
     @Override
     public ProjectResponse updateProject(Long id, ProjectRequest request, Long userId) {
-        Project project = projectRepository.findAccessibleProjectById(id , userId);
+        Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow(
+                () -> new ResourceNotFoundException("Project",id.toString())
+        );
         if(!project.getOwner().getId().equals(userId)){
             throw new RuntimeException("You are not allowed to update the name");
         }
@@ -71,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void softDelete(Long id, Long userId) {
-        Project project = projectRepository.findAccessibleProjectById(id , userId);
+        Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow();
         if(!project.getOwner().getId().equals(userId)){
             throw new RuntimeException("You are not allowed to delete");
         }

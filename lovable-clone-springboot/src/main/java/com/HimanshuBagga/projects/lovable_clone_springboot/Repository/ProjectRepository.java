@@ -28,7 +28,7 @@ public interface ProjectRepository extends JpaRepository<Project , Long> {
                 AND p.deletedAt IS NULL
                 AND p.owner.id = :userId
             """)
-    Project findAccessibleProjectById(@Param("projectId") Long projectId,
+    Optional<Project> findAccessibleProjectById(@Param("projectId") Long projectId,
                                                 @Param("userId") Long userId);
 
 }
