@@ -3,6 +3,7 @@ package com.HimanshuBagga.projects.lovable_clone_springboot.error;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,4 +23,12 @@ public class GlobalExceptionHandler {
         log.error(apiError.toString());
         return ResponseEntity.status(apiError.status()).body(apiError);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class) // Not passing valid input
+    public ResponseEntity<ApiError> handleInputValidationError(MethodArgumentNotValidException exception){
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,exception.getLocalizedMessage());
+        log.error(apiError.toString());
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
 }
