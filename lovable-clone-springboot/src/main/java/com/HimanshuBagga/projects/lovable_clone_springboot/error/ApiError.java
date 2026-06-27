@@ -1,5 +1,6 @@
 package com.HimanshuBagga.projects.lovable_clone_springboot.error;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
@@ -9,7 +10,7 @@ public record ApiError(
     HttpStatus status,
     String message,
     Instant timeStamp,
-    List<ApiFieldError> error
+    @JsonInclude(JsonInclude.Include.NON_NULL) List<ApiFieldError> error // only be included when its not null
 ) {
     public ApiError(HttpStatus status , String message){
         this(status,message,Instant.now(), null);

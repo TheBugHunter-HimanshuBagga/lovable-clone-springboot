@@ -12,6 +12,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMember;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMemberId;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
+import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMapper;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMemberMapper;
 import lombok.AccessLevel;
@@ -40,18 +41,23 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 
         // if that project doesn't exists
-        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
+        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow(
+               () -> new ResourceNotFoundException("Project",projectId.toString())
+        );
 
         // if my project Exists then return its owner + members(ProjectMembers)
-        List<MemberResponse> memberResponseList = new ArrayList<>();
-        memberResponseList.add(projectMemberMapper.toProjectMemberResponseFromOwner(project.getOwner())); // till now only owner is added in this List
-
-        // Adding the projectMember
-        memberResponseList.addAll(projectMemberRepository.findByIdProjectId(projectId)
+        List<MemberResponse> memberResponseList = projectMemberRepository.findByIdProjectId(projectId)
                 .stream()// i am getting ProjectMember but i need it to be in MemberResponse hence we will be using the MapStruct
                 .map(projectMemberMapper::toProjectMemberResponseFromMember)
-                .toList()
-        );
+                .toList();
+        // memberResponseList.add(projectMemberMapper.toProjectMemberResponseFromOwner(project.getOwner())); // till now only owner is added in this List
+
+        // Adding the projectMember
+//        memberResponseList.addAll(projectMemberRepository.findByIdProjectId(projectId)
+//                .stream()// i am getting ProjectMember but i need it to be in MemberResponse hence we will be using the MapStruct
+//                .map(projectMemberMapper::toProjectMemberResponseFromMember)
+//                .toList()
+//        );
 
         return memberResponseList;
     }

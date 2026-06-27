@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException exception){
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, exception.getResourceName() + " with id " + exception.getResourceId() + " not found");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, exception.getResourceName() + " with id " + exception.getResourceId() + " not found!");
         log.error(apiError.toString());
         return ResponseEntity.status(apiError.status()).body(apiError);
     }
@@ -39,3 +39,8 @@ public class GlobalExceptionHandler {
     }
 
 }
+
+/*
+handleInputValidationError used when the jakartha validation fails :: Automatically caught By springboot
+
+ */
