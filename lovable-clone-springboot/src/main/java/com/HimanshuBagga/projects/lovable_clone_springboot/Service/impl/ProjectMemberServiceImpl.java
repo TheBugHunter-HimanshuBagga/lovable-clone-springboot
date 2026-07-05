@@ -46,20 +46,11 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         );
 
         // if my project Exists then return its owner + members(ProjectMembers)
-        List<MemberResponse> memberResponseList = projectMemberRepository.findByIdProjectId(projectId)
+        return projectMemberRepository.findByIdProjectId(projectId)
                 .stream()// i am getting ProjectMember but i need it to be in MemberResponse hence we will be using the MapStruct
                 .map(projectMemberMapper::toProjectMemberResponseFromMember)
                 .toList();
-        // memberResponseList.add(projectMemberMapper.toProjectMemberResponseFromOwner(project.getOwner())); // till now only owner is added in this List
 
-        // Adding the projectMember
-//        memberResponseList.addAll(projectMemberRepository.findByIdProjectId(projectId)
-//                .stream()// i am getting ProjectMember but i need it to be in MemberResponse hence we will be using the MapStruct
-//                .map(projectMemberMapper::toProjectMemberResponseFromMember)
-//                .toList()
-//        );
-
-        return memberResponseList;
     }
 
     @Override
@@ -69,11 +60,11 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
         // only project owner can invite the people right
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException(
-                    "You are not allowed to add/invite the people in the project"
-            );
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException(
+//                    "You are not allowed to add/invite the people in the project"
+//            );
+//        }
 
         // for inviting a person i need his/her email and role hence
         User invitee = userRepository.findByEmail(request.email()).orElseThrow();
@@ -114,9 +105,9 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         // check weather the particular project exists or not where i need to update the userRole
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("You are not allowed to Update/Change the role of a member");
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException("You are not allowed to Update/Change the role of a member");
+//        }
 
         // if the projects i got then and the updateor is an owner then:
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId); // whom to update?
@@ -133,11 +124,11 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public void removeProjectMember(Long projectId, Long memberId, Long userId) {
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException(
-                    "Ypu can't remove the project Member/You don't have permission to remove the project Member"
-            );
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException(
+//                    "Ypu can't remove the project Member/You don't have permission to remove the project Member"
+//            );
+//        }
 
         // find the projectMember
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);

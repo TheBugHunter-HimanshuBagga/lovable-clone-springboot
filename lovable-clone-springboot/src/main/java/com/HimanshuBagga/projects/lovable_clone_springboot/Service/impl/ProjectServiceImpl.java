@@ -1,5 +1,6 @@
 package com.HimanshuBagga.projects.lovable_clone_springboot.Service.impl;
 
+import com.HimanshuBagga.projects.lovable_clone_springboot.Repository.ProjectMemberRepository;
 import com.HimanshuBagga.projects.lovable_clone_springboot.Repository.ProjectRepository;
 import com.HimanshuBagga.projects.lovable_clone_springboot.Repository.UserRepository;
 import com.HimanshuBagga.projects.lovable_clone_springboot.Service.ProjectService;
@@ -7,7 +8,10 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRe
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectSummaryResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
+import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMember;
+import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMemberId;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
+import com.HimanshuBagga.projects.lovable_clone_springboot.enums.ProjectRole;
 import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMapper;
 import jakarta.transaction.Transactional;
@@ -29,16 +33,30 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectRepository projectRepository;
     UserRepository userRepository;
     ProjectMapper projectMapper;
-
+    ProjectMemberRepository projectMemberRepository;
     @Override
     public ProjectResponse createProject(ProjectRequest request, Long userId) {
-        User owner = userRepository.findById(userId).orElseThrow();
+        User owner = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User" , userId.toString())
+        );
         Project project = Project.builder()
                 .name(request.name())
-                .owner(owner)
                 .isPublic(false)
                 .build();
+
         project = projectRepository.save(project);
+
+        ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
+        ProjectMember projectMember = ProjectMember.builder()
+                .id(projectMemberId)
+                .projectRole(ProjectRole.OWNER)
+                .user(owner)
+                .acceptedAt(Instant.now())
+                .invitedAt(Instant.now())
+                .project(project)
+                .build();
+
+        projectMemberRepository.save(projectMember);
         // Entity to record -> MAPSTRUCT
         // savedProjectToProjectResponse
         return projectMapper.toProjectResponse(project);
@@ -66,9 +84,9 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow(
                 () -> new ResourceNotFoundException("Project",id.toString())
         );
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("You are not allowed to update the name");
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException("You are not allowed to update the name");
+//        }
         project.setName(request.name());
         project = projectRepository.save(project);
         return projectMapper.toProjectResponse(project);
@@ -77,9 +95,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void softDelete(Long id, Long userId) {
         Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow();
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("You are not allowed to delete");
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException("You are not allowed to delete");
+//        }
         project.setDeletedAt(Instant.now());
         projectRepository.save(project);
     }
