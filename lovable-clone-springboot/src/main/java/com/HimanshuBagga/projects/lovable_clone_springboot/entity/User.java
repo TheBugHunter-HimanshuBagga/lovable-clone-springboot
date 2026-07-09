@@ -22,9 +22,9 @@ public class User {
     Long id;
 
     String name;
-    String email;
-    String passwordHash;
-    String avatarUrl;
+    String username; //email
+    String password;
+
 
     @CreationTimestamp
     Instant createdAt;

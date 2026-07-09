@@ -4,7 +4,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRe
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectSummaryResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
 import org.mapstruct.Mapper;
-
+import org.mapstruct.Mapping;
 
 
 /*
@@ -13,7 +13,10 @@ MAP-STRUCT
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
 
+
     ProjectResponse toProjectResponse(Project project); // ProjectToProjectResponse entity to dto
+
+
     ProjectSummaryResponse toProjectSummaryResponse(Project project);
 }
 

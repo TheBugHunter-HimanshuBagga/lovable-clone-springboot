@@ -7,13 +7,11 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.Service.ProjectMember
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.member.InviteMemberRequest;
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.member.MemberResponse;
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.member.UpdateMemberRoleRequest;
-import com.HimanshuBagga.projects.lovable_clone_springboot.dto.project.ProjectRequest;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.Project;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMember;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMemberId;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
 import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
-import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMapper;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMemberMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,7 +64,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 //        }
 
         // for inviting a person i need his/her email and role hence
-        User invitee = userRepository.findByEmail(request.email()).orElseThrow();
+        User invitee = userRepository.findByUsername(request.username()).orElseThrow();
 
         // may be owner is trying to invite himself?
         if(invitee.getId().equals(userId)){
