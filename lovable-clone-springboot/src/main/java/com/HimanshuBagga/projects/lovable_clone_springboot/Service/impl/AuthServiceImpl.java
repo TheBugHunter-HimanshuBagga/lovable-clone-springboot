@@ -7,10 +7,14 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.auth.LoginRequest
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.auth.SignupRequest;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
 import com.HimanshuBagga.projects.lovable_clone_springboot.error.BadRequestException;
+import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.UserMapper;
+import com.HimanshuBagga.projects.lovable_clone_springboot.security.AuthUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +28,8 @@ public class AuthServiceImpl implements AuthService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    AuthUtil authUtil;
+    AuthenticationManager authenticationManager;
 
     @Override
     public AuthResponse signup(SignupRequest request){
@@ -39,8 +45,9 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user = userRepository.save(user);
 
+        String token = authUtil.generateAccessToken(user);
 
-        return new AuthResponse("dummy",userMapper.toUserProfileResponse(user));
+        return new AuthResponse(token ,userMapper.toUserProfileResponse(user));
     }
     @Override
     public AuthResponse login(LoginRequest request){
