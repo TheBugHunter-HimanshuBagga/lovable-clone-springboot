@@ -16,4 +16,4 @@ spring:
         formate_sql: true
 
 jwt:
-  secret-Key:
+  secret-Key: aqswdefrgthyjukilozxscdvfbgnhmjfgdhetfgskngh

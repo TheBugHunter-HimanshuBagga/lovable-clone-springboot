@@ -7,7 +7,6 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.dto.auth.LoginRequest
 import com.HimanshuBagga.projects.lovable_clone_springboot.dto.auth.SignupRequest;
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
 import com.HimanshuBagga.projects.lovable_clone_springboot.error.BadRequestException;
-import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.UserMapper;
 import com.HimanshuBagga.projects.lovable_clone_springboot.security.AuthUtil;
 import lombok.AccessLevel;
@@ -51,6 +50,17 @@ public class AuthServiceImpl implements AuthService {
     }
     @Override
     public AuthResponse login(LoginRequest request){
-        return null;
+        // login -> username and password
+
+        // returns an authentication object
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.username(), request.password()) // principle -> username ,Credential -> password and isAuthenticated() = false
+        );
+
+        User user = (User) authentication.getPrincipal();
+
+        String token = authUtil.generateAccessToken(user);
+
+        return new AuthResponse(token, userMapper.toUserProfileResponse(user));
     }
 }
