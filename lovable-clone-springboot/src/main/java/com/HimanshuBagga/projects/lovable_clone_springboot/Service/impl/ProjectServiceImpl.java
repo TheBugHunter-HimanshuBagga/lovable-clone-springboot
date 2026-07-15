@@ -14,6 +14,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
 import com.HimanshuBagga.projects.lovable_clone_springboot.enums.ProjectRole;
 import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMapper;
+import com.HimanshuBagga.projects.lovable_clone_springboot.security.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +35,16 @@ public class ProjectServiceImpl implements ProjectService {
     UserRepository userRepository;
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
+    AuthUtil authUtil;
     @Override
-    public ProjectResponse createProject(ProjectRequest request, Long userId) {
-        User owner = userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User" , userId.toString())
-        );
+    public ProjectResponse createProject(ProjectRequest request) {
+        Long userId = authUtil.getCurrentUserId();
+//        User owner = userRepository.findById(userId).orElseThrow(
+//                () -> new ResourceNotFoundException("User" , userId.toString())
+//        ); this will be making a db call but we don't need the full object
+
+        User owner = userRepository.getReferenceById(userId); // hibernate create a proxy of this and gives us the response only works inside a Transactional context
+
         Project project = Project.builder()
                 .name(request.name())
                 .isPublic(false)
@@ -63,7 +69,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) {
+    public List<ProjectSummaryResponse> getUserProjects() {
+        Long userId = authUtil.getCurrentUserId();
         return projectRepository.findAllAccessibleByUser(userId)
                 .stream()
                 .map(project -> projectMapper.toProjectSummaryResponse(project))
@@ -71,7 +78,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long id, Long userId) {
+    public ProjectResponse getUserProjectById(Long id) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow(
                 () -> new ResourceNotFoundException("Project",id.toString()) // if project is not found then it will be caught by Global Exception Handler ResourceNotFound
         );
@@ -80,7 +88,8 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
-    public ProjectResponse updateProject(Long id, ProjectRequest request, Long userId) {
+    public ProjectResponse updateProject(Long id, ProjectRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow(
                 () -> new ResourceNotFoundException("Project",id.toString())
         );
@@ -93,7 +102,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void softDelete(Long id, Long userId) {
+    public void softDelete(Long id) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow();
 //        if(!project.getOwner().getId().equals(userId)){
 //            throw new RuntimeException("You are not allowed to delete");

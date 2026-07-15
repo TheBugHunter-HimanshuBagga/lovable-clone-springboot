@@ -13,6 +13,7 @@ import com.HimanshuBagga.projects.lovable_clone_springboot.entity.ProjectMemberI
 import com.HimanshuBagga.projects.lovable_clone_springboot.entity.User;
 import com.HimanshuBagga.projects.lovable_clone_springboot.error.ResourceNotFoundException;
 import com.HimanshuBagga.projects.lovable_clone_springboot.mapper.ProjectMemberMapper;
+import com.HimanshuBagga.projects.lovable_clone_springboot.security.AuthUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,14 +30,15 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     UserRepository userRepository;
     ProjectRepository projectRepository;
     ProjectMemberMapper projectMemberMapper;
+    AuthUtil authUtil;
     @Override
-    public List<MemberResponse> getProjectMembers(Long projectId, Long userId) {
+    public List<MemberResponse> getProjectMembers(Long projectId) {
         /*
          first we need to check that is that member already authenticated and get it from SecurityContextHolder
          AUTHENTICATION will be added LATER
          */
 
-
+        Long userId = authUtil.getCurrentUserId();
         // if that project doesn't exists
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow(
                () -> new ResourceNotFoundException("Project",projectId.toString())
@@ -51,8 +53,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
-
+    public MemberResponse inviteMember(Long projectId, InviteMemberRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         // to invite a memeber we need a particular project to add him in that Project hence
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
@@ -96,9 +98,9 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest updateMemberRoleRequest, Long userId) {
+    public MemberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest updateMemberRoleRequest) {
         // first we need to check that is that user Authenticated right also with this we need to check wheather the person updating is an owner or not right
-
+        Long userId = authUtil.getCurrentUserId();
         // check weather the particular project exists or not where i need to update the userRole
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
@@ -118,7 +120,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public void removeProjectMember(Long projectId, Long memberId, Long userId) {
+    public void removeProjectMember(Long projectId, Long memberId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
 
 //        if(!project.getOwner().getId().equals(userId)){
