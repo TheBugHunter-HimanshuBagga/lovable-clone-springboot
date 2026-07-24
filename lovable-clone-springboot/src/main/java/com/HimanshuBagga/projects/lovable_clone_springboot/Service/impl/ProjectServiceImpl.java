@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -78,7 +79,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long id) {
+    @PreAuthorize("@security.canViewProject(#id)") // Uses AOP reduces the
+    public ProjectResponse getUserProjectById(Long id) { // projectId
         Long userId = authUtil.getCurrentUserId();
         Project project = projectRepository.findAccessibleProjectById(id , userId).orElseThrow(
                 () -> new ResourceNotFoundException("Project",id.toString()) // if project is not found then it will be caught by Global Exception Handler ResourceNotFound
